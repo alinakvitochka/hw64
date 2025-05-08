@@ -4,8 +4,16 @@ const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const mongoose = require('mongoose');
+const Animal = require('./models/Animal');
+const flash = require('connect-flash');
 
 const app = express();
+
+const mongoURI = 'mongodb+srv://test:test_project@cluster0.vy3wadi.mongodb.net/dbTest?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const users = [];
 
@@ -20,12 +28,13 @@ app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: true,
-  cookie: { httpOnly: true, secure: false } 
+  cookie: { httpOnly: true, secure: false }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
 
 passport.use(new LocalStrategy((username, password, done) => {
   const user = users.find(u => u.email === username);
@@ -49,7 +58,6 @@ passport.deserializeUser((email, done) => {
   done(null, user);
 });
 
-
 app.get('/register', (req, res) => {
   res.render('register');
 });
@@ -57,9 +65,10 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
 
-  
-  if (users.some(user => user.email === email)) {
-    return res.send('User already exists');
+  console.log('Registration data:', req.body);
+
+  if (!email || !password) {
+    return res.status(400).send('All fields are required');
   }
 
   bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -75,7 +84,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local', {
-  successRedirect: '/protected',
+  successRedirect: '/animals',
   failureRedirect: '/login',
   failureFlash: true
 }));
@@ -87,17 +96,38 @@ app.get('/logout', (req, res) => {
   });
 });
 
-
-app.get('/protected', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login');
-  }
-
-  res.render('protected', { user: req.user });
+app.get('/', (req, res) => {
+  res.redirect('/animals');
 });
 
-app.get('/', (req, res) => {
-  res.send('<h1>Welcome to the Authentication System</h1><p><a href="/login">Login</a> | <a href="/register">Register</a></p>');
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
+app.get('/animals', ensureAuthenticated, async (req, res) => {
+  try {
+    const animals = await Animal.find();
+    res.render('animals', { animals });
+  } catch (err) {
+    console.error('Error fetching animals:', err);
+    res.status(500).send('Error fetching animals');
+  }
+});
+
+app.get('/animals/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const animal = await Animal.findById(req.params.id);
+    if (!animal) {
+      return res.status(404).send('Animal not found');
+    }
+    res.render('animal', { animal });
+  } catch (err) {
+    console.error('Error fetching animal:', err);
+    res.status(500).send('Error fetching animal');
+  }
 });
 
 app.listen(3000, () => {

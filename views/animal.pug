@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title Animal Details
+    link(rel="stylesheet" href="/css/bootstrap.min.css")
+    link(rel="stylesheet" href="/css/styles.css")
+  body
+    .animal-details
+      h1= animal.name
+      p
+        strong Species:
+        |  cat
+      p
+        strong Age:
+        |  3 years old
+      p.description
+        | This is a detailed view of the animal. The species, age, and other unique characteristics make it a fascinating creature worth learning about.
+      a.back-link(href="/animals") Back to Animal List
