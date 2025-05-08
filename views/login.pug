@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+  head
+    title Login
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    h1 Login
+    form(action="/login", method="POST")
+      label(for="email") Email
+      input(type="email", name="username", required=true)
+      label(for="password") Password
+      input(type="password", name="password", required=true)
+      button(type="submit") Login
+    p Don't have an account? <a href="/register">Register</a>

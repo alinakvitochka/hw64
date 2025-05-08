@@ -1,0 +1,9 @@
+doctype html
+html(lang="en")
+  head
+    title Protected Area
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    h1 Welcome, #{user.email}
+    p This is a protected area. Only logged in users can see this page.
+    a(href="/logout") Logout
