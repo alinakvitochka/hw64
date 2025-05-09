@@ -11,7 +11,30 @@ html
         each animal in animals
           li
             a(href=`/animals/${animal._id}`) #{animal.name} (#{animal.species})
+            a(href=`/animals/${animal._id}/edit` class="btn btn-warning") Edit
+      form(action="/animals" method="POST")
+        div.form-group
+          label(for="name") Name:
+          input#name.form-control(type="text" name="name" required)
+        div.form-group
+          label(for="species") Species:
+          input#species.form-control(type="text" name="species" required)
+        div.form-group
+          label(for="age") Age:
+          input#age.form-control(type="number" name="age" required)
+        button.btn.btn-success(type="submit") Add Animal
+      form(action="/animals-search" method="GET")
+        div.form-group
+          label(for="name") Search by Name:
+          input#name.form-control(type="text" name="name" required)
+        button.btn.btn-primary(type="submit") Search
+      form(action="/animals/deleteMany" method="POST")
+        input(type="hidden" name="animalIds" value=animals.map(animal => animal._id).join(','))
+        button.btn.btn-danger(type="submit") Delete All
+      form(action='/animals/create-piglets', method='post')
+        button(type='submit') Create Piglets
       a(href="/") Back to Home
       .nav-links
         a(href="/animals" class="btn btn-primary") Animals
         a(href="/logout" class="btn btn-danger") Logout
+        a(href="/animals-update-cats-to-dogs" class="btn btn-info") Update Cats to Dogs

@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    title Edit Animal
+    link(rel="stylesheet" href="/css/bootstrap.min.css")
+    link(rel="stylesheet" href="/css/styles.css")
+  body
+    .edit-animal-form
+      h1 Edit Animal
+      form(action=isReplace ? `/animals/${animal._id}/replace` : `/animals/${animal._id}/edit` method="POST")
+        .form-group
+          label(for="name") Name
+          input#name.form-control(type="text" name="name" value=animal.name required)
+        .form-group
+          label(for="species") Species
+          input#species.form-control(type="text" name="species" value=animal.species required)
+        .form-group
+          label(for="age") Age
+          input#age.form-control(type="number" name="age" value=animal.age required)
+        button(type="submit" class="btn btn-primary") Save Changes
+      a.back-link(href="/animals") Back to Animal List

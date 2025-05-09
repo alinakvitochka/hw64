@@ -15,4 +15,9 @@ html
         |  3 years old
       p.description
         | This is a detailed view of the animal. The species, age, and other unique characteristics make it a fascinating creature worth learning about.
+      form(action="/animals/delete" method="POST")
+        input(type="hidden" name="id" value=animal._id)
+        button(type="submit" class="btn btn-danger") Delete
+      a(href=`/animals/${animal._id}/edit` class="btn btn-warning") Edit
+      a(href=`/animals/${animal._id}/edit` class="btn btn-secondary") Replace
       a.back-link(href="/animals") Back to Animal List
